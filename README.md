@@ -1,3 +1,7 @@
+<img width="922" height="401" alt="image" src="https://github.com/user-attachments/assets/13ac8f92-42d7-40f0-baed-a0b4f8ceb8e3" />
+<img width="1127" height="492" alt="image" src="https://github.com/user-attachments/assets/a4ad9a39-bc48-43fe-b3d6-34a1afa6abd0" />
+
+
 # Parallel and Distributed Computing (CSC-334)
 ## Lab 03: Socket Programming with Multi-Threading
 
