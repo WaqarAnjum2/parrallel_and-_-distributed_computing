@@ -1,5 +1,5 @@
 # ==============================================================================
-# Git Ignore Configuration - Parallel and Distributed Computing (CSC-334)
+# Git Ignore Configuration - Distributed GPU Task Offloading Midterm Project
 # ==============================================================================
 
 # Byte-compiled / optimized / DLL files
@@ -16,6 +16,8 @@ venv/
 env/
 .env/
 ENV/
+env.bak/
+venv.bak/
 
 # Environment Variables & Secrets
 .env
@@ -46,23 +48,27 @@ MANIFEST
 .coverage
 .coverage.*
 .cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
 htmlcov/
 
-# Logs and runtime databases
+# Logs and databases
 *.log
 *.sqlite
 *.sqlite3
 *.tmp
 
 # Dynamic Job Runtime Data & Transcoded Video Outputs
-midterm project/data/inputs/*
-!midterm project/data/inputs/.gitkeep
-midterm project/data/outputs/*
-!midterm project/data/outputs/.gitkeep
-midterm project/output/*
-!midterm project/output/.gitkeep
-midterm project/benchmarks/results/*
-!midterm project/benchmarks/results/.gitkeep
+data/inputs/*
+!data/inputs/.gitkeep
+data/outputs/*
+!data/outputs/.gitkeep
+output/*
+!output/.gitkeep
+benchmarks/results/*
+!benchmarks/results/.gitkeep
 
 # IDEs & Editors
 .idea/
