@@ -24,6 +24,7 @@ from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QLineEdit,
+    QListView,
     QMessageBox,
     QProgressBar,
     QPushButton,
@@ -243,6 +244,9 @@ class JobPage(QWidget):
         if idx_p >= 0:
             self._preset_combo.setCurrentIndex(idx_p)
         params_layout.addWidget(self._preset_combo, 1, 3)
+
+        for combo in (self._codec_combo, self._resolution_combo, self._bitrate_combo, self._preset_combo):
+            combo.setView(QListView())
 
         params_group.setLayout(params_layout)
         layout.addWidget(params_group)

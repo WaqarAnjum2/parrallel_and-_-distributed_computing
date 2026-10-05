@@ -48,7 +48,7 @@ QGroupBox::title {{
     background-color: {BG_WINDOW};
     border-radius: 4px;
 }}
-QLineEdit, QSpinBox, QComboBox {{
+QLineEdit, QSpinBox {{
     background-color: {BG_INPUT};
     border: 1px solid {BORDER_COLOR};
     border-radius: 6px;
@@ -56,13 +56,64 @@ QLineEdit, QSpinBox, QComboBox {{
     color: {TEXT_MAIN};
     font-size: 13px;
 }}
-QLineEdit:focus, QSpinBox:focus, QComboBox:focus {{
+QLineEdit:focus, QSpinBox:focus {{
+    border: 1px solid {PRIMARY_BLUE};
+    background-color: #FFFFFF;
+}}
+QComboBox {{
+    background-color: {BG_INPUT};
+    border: 1px solid {BORDER_COLOR};
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: {TEXT_MAIN};
+    font-size: 13px;
+    font-weight: 500;
+}}
+QComboBox:hover, QComboBox:focus {{
     border: 1px solid {PRIMARY_BLUE};
     background-color: #FFFFFF;
 }}
 QComboBox::drop-down {{
-    border: none;
-    padding-right: 8px;
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 28px;
+    border-left: 1px solid {BORDER_COLOR};
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    background-color: {BG_SUBTLE};
+}}
+QComboBox::down-arrow {{
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 5px solid {TEXT_SECONDARY};
+    margin-right: 2px;
+}}
+QComboBox QAbstractItemView {{
+    background-color: #FFFFFF;
+    color: {TEXT_MAIN};
+    selection-background-color: {PRIMARY_BLUE};
+    selection-color: #FFFFFF;
+    border: 1px solid {BORDER_COLOR};
+    border-radius: 6px;
+    padding: 4px;
+    outline: none;
+}}
+QComboBox QAbstractItemView::item {{
+    min-height: 30px;
+    padding: 6px 10px;
+    color: {TEXT_MAIN};
+    background-color: #FFFFFF;
+    border-radius: 4px;
+}}
+QComboBox QAbstractItemView::item:hover, QComboBox QAbstractItemView::item:selected {{
+    background-color: {PRIMARY_BLUE};
+    color: #FFFFFF;
+}}
+QListView {{
+    background-color: #FFFFFF;
+    color: {TEXT_MAIN};
 }}
 QTabWidget::pane {{
     border: 1px solid {BORDER_COLOR};
