@@ -132,43 +132,57 @@ def get_local_ip() -> str:
 
 
 def detect_gpu_info() -> tuple[str, str, bool]:
-    """Detect NVIDIA GPU name, memory, and NVENC support."""
-    gpu_name = "Standard Graphics Adapter"
-    vram = "Shared Memory"
-    nvenc = False
+    """Detect GPU name, memory, and NVENC/hardware support."""
+    # 1. nvidia-smi with standard Windows paths
+    smi_paths = [
+        shutil.which("nvidia-smi"),
+        r"C:\Windows\System32\nvidia-smi.exe",
+        r"C:\Program Files\NVIDIA Corporation\NVSMI\nvidia-smi.exe",
+    ]
+    for p in smi_paths:
+        if p and os.path.exists(p):
+            try:
+                cmd = [p, "--query-gpu=name,memory.total", "--format=csv,noheader,nounits"]
+                res = subprocess.run(cmd, capture_output=True, text=True, timeout=3, check=False)
+                if res.returncode == 0 and res.stdout.strip():
+                    parts = res.stdout.strip().split("\n")[0].split(",")
+                    return parts[0].strip(), f"{int(parts[1].strip()):,} MB VRAM", True
+            except Exception:
+                pass
 
-    try:
-        cmd = [
-            "nvidia-smi",
-            "--query-gpu=name,memory.total",
-            "--format=csv,noheader,nounits",
-        ]
-        res = subprocess.run(
-            cmd, capture_output=True, text=True, timeout=3, check=False
-        )
-        if res.returncode == 0 and res.stdout.strip():
-            parts = res.stdout.strip().split("\n")[0].split(",")
-            gpu_name = parts[0].strip()
-            vram = f"{int(parts[1].strip()):,} MB VRAM"
-            nvenc = True
-            return gpu_name, vram, nvenc
-    except Exception:
-        pass
-
+    # 2. NVML library
     try:
         import pynvml
-
         pynvml.nvmlInit()
         handle = pynvml.nvmlDeviceGetHandleByIndex(0)
         gpu_name = pynvml.nvmlDeviceGetName(handle)
+        if isinstance(gpu_name, bytes):
+            gpu_name = gpu_name.decode("utf-8")
         mem = pynvml.nvmlDeviceGetMemoryInfo(handle)
         vram = f"{mem.total // (1024 * 1024):,} MB VRAM"
-        nvenc = True
         pynvml.nvmlShutdown()
+        return gpu_name, vram, True
     except Exception:
         pass
 
-    return gpu_name, vram, nvenc
+    # 3. Windows CIM / WMI
+    if os.name == "nt":
+        try:
+            import json
+            ps_cmd = "Get-CimInstance Win32_VideoController | Select-Object Name, AdapterRAM | ConvertTo-Json"
+            res = subprocess.run(["powershell", "-NoProfile", "-Command", ps_cmd], capture_output=True, text=True, timeout=3)
+            if res.returncode == 0 and res.stdout.strip():
+                data = json.loads(res.stdout)
+                controllers = data if isinstance(data, list) else [data]
+                for c in controllers:
+                    name = str(c.get("Name") or "")
+                    if any(k in name.lower() for k in ["nvidia", "geforce", "quadro", "rtx", "gtx"]):
+                        ram = (c.get("AdapterRAM") or 0) // (1024 * 1024)
+                        return name, f"{ram:,} MB VRAM" if ram else "Dedicated VRAM", True
+        except Exception:
+            pass
+
+    return "Standard Graphics Adapter", "Shared Memory", False
 
 
 class InstallWorker(QObject):

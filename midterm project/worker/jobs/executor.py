@@ -141,18 +141,30 @@ class JobExecutor:
                 await self._handle_timeout(job)
                 return
 
-            # Check if NVENC driver mismatch occurred and attempt automatic hardware fallback
+            # Check if encoder error occurred and attempt automatic hardware/CPU fallback cascade
             if self._current_process.returncode != 0:
                 stderr_bytes = await self._current_process.stderr.read() if self._current_process.stderr else b""
                 stderr_text = stderr_bytes.decode("utf-8", errors="replace")
-                is_nvenc_err = any(
-                    x in stderr_text.lower()
-                    for x in ["nvenc", "driver does not support", "function not implemented", "could not open encoder"]
+                logger.warning(
+                    f"Primary encoder execution failed (code {self._current_process.returncode}): {stderr_text[-300:].strip()}",
+                    extra={"job_id": job.job_id},
                 )
-                if is_nvenc_err and "nvenc" in job.output_codec:
-                    fallback_codec = "h264_mf" if "264" in job.output_codec else "hevc_mf"
+
+                # Build ordered list of resilient fallback encoders
+                fallbacks: list[str] = []
+                if "nvenc" in job.output_codec:
+                    if "264" in job.output_codec:
+                        fallbacks = ["h264_mf", "libx264"]
+                    else:
+                        fallbacks = ["hevc_mf", "libx265", "h264_mf", "libx264"]
+                elif "mf" in job.output_codec:
+                    fallbacks = ["libx264"] if "264" in job.output_codec else ["libx265", "libx264"]
+
+                for fallback_codec in fallbacks:
+                    if self._current_process.returncode == 0:
+                        break
                     logger.warning(
-                        f"NVENC driver version mismatch detected. Retrying with system hardware encoder: {fallback_codec}",
+                        f"Retrying transcode with fallback encoder: {fallback_codec}",
                         extra={"job_id": job.job_id},
                     )
                     fallback_cmd = self._build_command(job, encoder_override=fallback_codec)

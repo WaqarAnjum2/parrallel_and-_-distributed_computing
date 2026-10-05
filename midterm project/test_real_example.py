@@ -31,6 +31,8 @@ def main() -> None:
     print(f" File Size:     {video_path.stat().st_size / (1024*1024):.2f} MB")
 
     config = load_config()
+    if len(sys.argv) > 1 and not sys.argv[1].startswith("-"):
+        config.worker_host = sys.argv[1].strip()
     api = APIClient(config)
 
     # 1. Health check & hardware telemetry
