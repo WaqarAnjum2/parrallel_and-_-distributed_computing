@@ -25,6 +25,13 @@
 | **Verification Status** | 100% Real Hardware Transcoding (Zero Mocks / Zero Simulated Data) |
 
 ---
+<img width="1911" height="865" alt="image" src="https://github.com/user-attachments/assets/1be50b5d-07e2-4c90-8ce6-dbeeb2782e67" />
+<img width="1483" height="762" alt="WhatsApp Image 2026-10-05 at 10 17 58 AM (1)" src="https://github.com/user-attachments/assets/65d2e8b9-2c41-4b21-b79a-6adeff23fc29" />
+<img width="1912" height="873" alt="image" src="https://github.com/user-attachments/assets/1ac094e6-9b12-4dca-808a-662f9975fb1e" />
+<img width="1902" height="898" alt="image" src="https://github.com/user-attachments/assets/6ee6d46a-04a5-496f-b088-1ad18453f6d8" />
+<img width="1887" height="867" alt="image" src="https://github.com/user-attachments/assets/f01f362a-25b9-4d47-9e48-489f9108ae2d" />
+
+
 
 ## 📖 Executive Summary & Core Concept
 
