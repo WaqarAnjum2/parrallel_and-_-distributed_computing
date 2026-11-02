@@ -49,6 +49,13 @@ class RenderConfig(BaseModel):
     codec: str = Field(default="h264_nvenc", description="Target encoder: h264_nvenc or libx264")
     fps: Optional[int] = Field(default=None, description="Target framerate, or None to keep original")
     input_sha256: Optional[str] = Field(default=None, description="SHA-256 checksum of input file for verification")
+    # Video Editing Timeline & Filter Parameters
+    trim_start: Optional[float] = Field(default=None, description="Trim start time in seconds")
+    trim_end: Optional[float] = Field(default=None, description="Trim end time in seconds")
+    filter_effect: str = Field(default="None", description="Visual filter: None, Grayscale, Sepia, Vignette, High Contrast, Invert")
+    playback_speed: float = Field(default=1.0, description="Playback speed factor e.g. 0.5, 1.0, 1.5, 2.0")
+    watermark_text: Optional[str] = Field(default=None, description="Text watermark stamped onto video")
+    audio_mode: str = Field(default="Original", description="Audio mode: Original, Boost, Mute")
 
 
 class ProgressUpdate(BaseModel):

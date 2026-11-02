@@ -61,17 +61,14 @@ class RemoteRenderApp(ctk.CTk):
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(2, weight=1)
 
-        # -------------------------------------------------------------
-        # 1. TOP HEADER & BRAND BAR
-        # -------------------------------------------------------------
+        # Top Header Bar
         header = ctk.CTkFrame(self, fg_color=COLOR_CARD_BG, corner_radius=10, border_width=1, border_color=COLOR_BORDER)
         header.grid(row=0, column=0, padx=16, pady=(16, 8), sticky="ew")
 
         brand_frame = ctk.CTkFrame(header, fg_color="transparent")
-        brand_frame.pack(side="left", padx=16, pady=12)
+        brand_frame.pack(side="left", padx=16, pady=10)
 
-        # Brand pill tag
-        tag_lbl = ctk.CTkLabel(
+        ctk.CTkLabel(
             brand_frame,
             text="COBALT DISTRIBUTED",
             font=ctk.CTkFont(family="Segoe UI", size=10, weight="bold"),
@@ -80,35 +77,31 @@ class RemoteRenderApp(ctk.CTk):
             corner_radius=6,
             padx=8,
             pady=2
-        )
-        tag_lbl.pack(anchor="w")
+        ).pack(anchor="w")
 
-        title_lbl = ctk.CTkLabel(
+        ctk.CTkLabel(
             brand_frame,
-            text="Remote GPU Task Offloader",
-            font=ctk.CTkFont(family="Segoe UI", size=20, weight="bold"),
+            text="Remote GPU Task Offloader & Studio Editor",
+            font=ctk.CTkFont(family="Segoe UI", size=19, weight="bold"),
             text_color=COLOR_TEXT_PRIMARY
-        )
-        title_lbl.pack(anchor="w")
+        ).pack(anchor="w")
 
         info_frame = ctk.CTkFrame(header, fg_color="transparent")
-        info_frame.pack(side="right", padx=16, pady=12)
+        info_frame.pack(side="right", padx=16, pady=10)
 
-        course_lbl = ctk.CTkLabel(
+        ctk.CTkLabel(
             info_frame,
             text="CSC-334: Parallel & Distributed Computing",
             font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold"),
             text_color=COLOR_TEXT_PRIMARY
-        )
-        course_lbl.pack(anchor="e")
+        ).pack(anchor="e")
 
-        spec_lbl = ctk.CTkLabel(
+        ctk.CTkLabel(
             info_frame,
             text="Peer-to-Peer LAN / Wi-Fi Subnet Offload Daemon",
             font=ctk.CTkFont(family="Segoe UI", size=11),
             text_color=COLOR_TEXT_MUTED
-        )
-        spec_lbl.pack(anchor="e")
+        ).pack(anchor="e")
 
         # -------------------------------------------------------------
         # 2. NETWORK HANDSHAKE & NODE STATUS CARD
@@ -248,7 +241,7 @@ class RemoteRenderApp(ctk.CTk):
         self.bitrate_menu.grid(row=1, column=1, padx=12, pady=(0, 10), sticky="ew")
 
         # Preset
-        ctk.CTkLabel(matrix_frame, text="Encoder Preset:", font=ctk.CTkFont(size=11, weight="bold"), text_color=COLOR_TEXT_PRIMARY).grid(row=2, column=0, padx=12, pady=(6, 2), sticky="w")
+        ctk.CTkLabel(matrix_frame, text="Encoder Preset:", font=ctk.CTkFont(size=11, weight="bold"), text_color=COLOR_TEXT_PRIMARY).grid(row=2, column=0, padx=12, pady=(4, 1), sticky="w")
         self.preset_menu = ctk.CTkOptionMenu(
             matrix_frame,
             values=["p1 (Fastest)", "p4 (Balanced)", "p7 (Highest Quality)"],
@@ -258,10 +251,10 @@ class RemoteRenderApp(ctk.CTk):
             dropdown_text_color=COLOR_TEXT_PRIMARY
         )
         self.preset_menu.set("p4 (Balanced)")
-        self.preset_menu.grid(row=3, column=0, padx=12, pady=(0, 12), sticky="ew")
+        self.preset_menu.grid(row=3, column=0, padx=12, pady=(0, 8), sticky="ew")
 
         # Engine Codec
-        ctk.CTkLabel(matrix_frame, text="Execution Engine:", font=ctk.CTkFont(size=11, weight="bold"), text_color=COLOR_TEXT_PRIMARY).grid(row=2, column=1, padx=12, pady=(6, 2), sticky="w")
+        ctk.CTkLabel(matrix_frame, text="Execution Engine:", font=ctk.CTkFont(size=11, weight="bold"), text_color=COLOR_TEXT_PRIMARY).grid(row=2, column=1, padx=12, pady=(4, 1), sticky="w")
         self.codec_menu = ctk.CTkOptionMenu(
             matrix_frame,
             values=["h264_nvenc (NVIDIA GPU)", "libx264 (CPU Only)"],
@@ -271,7 +264,74 @@ class RemoteRenderApp(ctk.CTk):
             dropdown_text_color=COLOR_TEXT_PRIMARY
         )
         self.codec_menu.set("h264_nvenc (NVIDIA GPU)")
-        self.codec_menu.grid(row=3, column=1, padx=12, pady=(0, 12), sticky="ew")
+        self.codec_menu.grid(row=3, column=1, padx=12, pady=(0, 8), sticky="ew")
+
+        # 3. Creative Video Editing Studio
+        ctk.CTkLabel(
+            left_col,
+            text="3. Video Editing Studio",
+            font=ctk.CTkFont(size=14, weight="bold"),
+            text_color=COLOR_TEXT_PRIMARY
+        ).pack(anchor="w", padx=16, pady=(4, 6))
+
+        edit_frame = ctk.CTkFrame(left_col, fg_color="#F8FAFC", corner_radius=8, border_width=1, border_color=COLOR_BORDER)
+        edit_frame.pack(fill="x", padx=16, pady=(0, 10))
+
+        # Trim Start & End
+        ctk.CTkLabel(edit_frame, text="Trim Start (sec):", font=ctk.CTkFont(size=10, weight="bold"), text_color=COLOR_TEXT_PRIMARY).grid(row=0, column=0, padx=8, pady=(6, 1), sticky="w")
+        self.trim_start_entry = ctk.CTkEntry(edit_frame, width=90, placeholder_text="0.0")
+        self.trim_start_entry.insert(0, "0.0")
+        self.trim_start_entry.grid(row=1, column=0, padx=8, pady=(0, 6), sticky="w")
+
+        ctk.CTkLabel(edit_frame, text="Trim End (sec):", font=ctk.CTkFont(size=10, weight="bold"), text_color=COLOR_TEXT_PRIMARY).grid(row=0, column=1, padx=8, pady=(6, 1), sticky="w")
+        self.trim_end_entry = ctk.CTkEntry(edit_frame, width=90, placeholder_text="Full")
+        self.trim_end_entry.insert(0, "Full")
+        self.trim_end_entry.grid(row=1, column=1, padx=8, pady=(0, 6), sticky="w")
+
+        # Color Filter & Speed
+        ctk.CTkLabel(edit_frame, text="Color Grading Filter:", font=ctk.CTkFont(size=10, weight="bold"), text_color=COLOR_TEXT_PRIMARY).grid(row=2, column=0, padx=8, pady=(4, 1), sticky="w")
+        self.filter_menu = ctk.CTkOptionMenu(
+            edit_frame,
+            values=["None (Original)", "Grayscale (B&W)", "Vintage Sepia", "Vignette Focus", "High Contrast", "Invert Negative"],
+            fg_color="#FFFFFF",
+            button_color=COLOR_TEXT_PRIMARY,
+            text_color=COLOR_TEXT_PRIMARY,
+            dropdown_text_color=COLOR_TEXT_PRIMARY,
+            width=150
+        )
+        self.filter_menu.set("None (Original)")
+        self.filter_menu.grid(row=3, column=0, padx=8, pady=(0, 6), sticky="ew")
+
+        ctk.CTkLabel(edit_frame, text="Playback Speed:", font=ctk.CTkFont(size=10, weight="bold"), text_color=COLOR_TEXT_PRIMARY).grid(row=2, column=1, padx=8, pady=(4, 1), sticky="w")
+        self.speed_menu = ctk.CTkOptionMenu(
+            edit_frame,
+            values=["1.0x (Normal)", "0.5x (Slow-Mo)", "1.5x (Fast)", "2.0x (Hyperlapse)"],
+            fg_color="#FFFFFF",
+            button_color=COLOR_TEXT_PRIMARY,
+            text_color=COLOR_TEXT_PRIMARY,
+            dropdown_text_color=COLOR_TEXT_PRIMARY,
+            width=130
+        )
+        self.speed_menu.set("1.0x (Normal)")
+        self.speed_menu.grid(row=3, column=1, padx=8, pady=(0, 6), sticky="ew")
+
+        # Watermark Text & Audio Mode
+        ctk.CTkLabel(edit_frame, text="Title / Watermark Text:", font=ctk.CTkFont(size=10, weight="bold"), text_color=COLOR_TEXT_PRIMARY).grid(row=4, column=0, padx=8, pady=(4, 1), sticky="w")
+        self.watermark_entry = ctk.CTkEntry(edit_frame, placeholder_text="e.g. Distributed Project 2026")
+        self.watermark_entry.grid(row=5, column=0, padx=8, pady=(0, 8), sticky="ew")
+
+        ctk.CTkLabel(edit_frame, text="Audio Track:", font=ctk.CTkFont(size=10, weight="bold"), text_color=COLOR_TEXT_PRIMARY).grid(row=4, column=1, padx=8, pady=(4, 1), sticky="w")
+        self.audio_menu = ctk.CTkOptionMenu(
+            edit_frame,
+            values=["Original (100%)", "Boost (+60%)", "Mute (Silent)"],
+            fg_color="#FFFFFF",
+            button_color=COLOR_TEXT_PRIMARY,
+            text_color=COLOR_TEXT_PRIMARY,
+            dropdown_text_color=COLOR_TEXT_PRIMARY,
+            width=130
+        )
+        self.audio_menu.set("Original (100%)")
+        self.audio_menu.grid(row=5, column=1, padx=8, pady=(0, 8), sticky="ew")
 
         # Action Buttons Section
         btn_container = ctk.CTkFrame(left_col, fg_color="transparent")
@@ -476,11 +536,43 @@ class RemoteRenderApp(ctk.CTk):
         raw_bitrate = self.bitrate_menu.get().split()[0]
         raw_preset = self.preset_menu.get().split()[0]
 
+        # Parse Video Editing Parameters
+        trim_s = None
+        try:
+            val_s = float(self.trim_start_entry.get().strip())
+            if val_s > 0:
+                trim_s = val_s
+        except ValueError:
+            pass
+
+        trim_e = None
+        try:
+            val_e = float(self.trim_end_entry.get().strip())
+            if val_e > 0:
+                trim_e = val_e
+        except ValueError:
+            pass
+
+        speed_val = 1.0
+        try:
+            speed_val = float(self.speed_menu.get().split("x")[0])
+        except ValueError:
+            pass
+
+        wm_text = self.watermark_entry.get().strip()
+        audio_choice = self.audio_menu.get().split()[0]
+
         config = RenderConfig(
             resolution=raw_res,
             bitrate=raw_bitrate,
             preset=raw_preset,
-            codec=codec_choice
+            codec=codec_choice,
+            trim_start=trim_s,
+            trim_end=trim_e,
+            filter_effect=self.filter_menu.get(),
+            playback_speed=speed_val,
+            watermark_text=wm_text if wm_text else None,
+            audio_mode=audio_choice
         )
 
         threading.Thread(target=self._run_pipeline, args=(config,), daemon=True).start()

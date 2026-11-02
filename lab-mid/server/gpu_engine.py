@@ -122,7 +122,7 @@ class GPUEngine:
         config: RenderConfig,
         use_gpu: bool = True
     ) -> Tuple[list, str]:
-        """Build command array for FFmpeg execution with chosen or fallback encoder."""
+        """Build command array for FFmpeg execution with editing filters and hardware encoder."""
         actual_codec = config.codec if use_gpu else "libx264"
         if use_gpu and not self.gpu_info.nvenc_supported:
             actual_codec = "libx264"
@@ -132,15 +132,51 @@ class GPUEngine:
             "-y",                     # Overwrite output
             "-nostats",
             "-loglevel", "error",
-            "-i", input_path,
-            "-c:v", actual_codec,
         ]
+
+        # Trimming edit points (Start and End times)
+        if config.trim_start is not None and config.trim_start > 0:
+            cmd.extend(["-ss", str(config.trim_start)])
+        if config.trim_end is not None and config.trim_end > 0:
+            cmd.extend(["-to", str(config.trim_end)])
+
+        cmd.extend(["-i", input_path])
+        cmd.extend(["-c:v", actual_codec])
+
+        # Assemble Video Filter Pipeline
+        vf_filters = []
 
         # Resolution scaling
         if config.resolution and config.resolution.lower() != "original":
             if "x" in config.resolution:
                 w, h = config.resolution.split("x")
-                cmd.extend(["-vf", f"scale={w}:{h}"])
+                vf_filters.append(f"scale={w}:{h}")
+
+        # Creative Visual Filters
+        eff = config.filter_effect.lower() if config.filter_effect else "none"
+        if "grayscale" in eff or "b&w" in eff:
+            vf_filters.append("hue=s=0")
+        elif "sepia" in eff:
+            vf_filters.append("colorchannelmixer=.393:.769:.189:0:.349:.686:.168:0:.272:.534:.131")
+        elif "vignette" in eff:
+            vf_filters.append("vignette=PI/4")
+        elif "contrast" in eff or "pop" in eff:
+            vf_filters.append("eq=contrast=1.3:saturation=1.4")
+        elif "invert" in eff or "negative" in eff:
+            vf_filters.append("negate")
+
+        # Playback speed factor (video pts)
+        if config.playback_speed and config.playback_speed != 1.0:
+            pts_ratio = 1.0 / config.playback_speed
+            vf_filters.append(f"setpts={pts_ratio:.4f}*PTS")
+
+        # Watermark Text Overlay
+        if config.watermark_text and config.watermark_text.strip():
+            safe_text = config.watermark_text.replace("'", "").replace(":", "-")
+            vf_filters.append(f"drawtext=text='{safe_text}':x=(w-text_w)/2:y=h-th-25:fontsize=24:fontcolor=white:box=1:boxcolor=black@0.6")
+
+        if vf_filters:
+            cmd.extend(["-vf", ",".join(vf_filters)])
 
         # Target Bitrate
         if config.bitrate:
@@ -158,10 +194,21 @@ class GPUEngine:
         if config.fps:
             cmd.extend(["-r", str(config.fps)])
 
+        # Audio Pipeline
+        if config.audio_mode == "Mute":
+            cmd.append("-an")
+        else:
+            cmd.extend(["-c:a", "aac", "-b:a", "128k"])
+            af_filters = []
+            if config.playback_speed and config.playback_speed != 1.0:
+                af_filters.append(f"atempo={config.playback_speed}")
+            if config.audio_mode == "Boost":
+                af_filters.append("volume=1.6")
+            if af_filters:
+                cmd.extend(["-af", ",".join(af_filters)])
+
         # Real-time progress output to stdout
         cmd.extend([
-            "-c:a", "aac",
-            "-b:a", "128k",
             "-progress", "pipe:1",
             output_path
         ])
