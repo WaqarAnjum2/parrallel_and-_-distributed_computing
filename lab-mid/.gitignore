@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+server_workspace/
+rendered_outputs/
+benchmark_temp/
+*.mp4
+*.mkv
+*.mov
+.vscode/
+.idea/
+venv/
+.env
+
